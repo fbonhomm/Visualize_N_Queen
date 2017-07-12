@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<input id="size" type="number" value="4" min="4" max="10">
+		<br>
+		<button onclick="start()">Start</button>
+		<span id="solution"></span>
+		<div id="board"></div>
+		<script type="text/javascript">
+			let solution;
+			let size;
+
+			function getRow(board, row) {
+				for (let col=0; col < board.length; col++) {
+					if (board[row][col]) return false;
+				}
+				return true;
+			}
+
+			function getColumns(board, col) {
+				for (let row=0; row < board.length; row++) {
+					if (board[row][col]) return false;
+				}
+				return true;
+			}
+
+			function getDiagonal(board, row, col) {
+				let x = row, y = col;
+
+				while (x && y) {
+					x -= 1;
+					y -= 1;
+					if (board[x][y]) return false;
+				}
+				x = row, y = col;
+				while (x < (board.length - 1) && y) {
+					x += 1;
+					y -= 1;
+					if (board[x][y]) return false;
+				}
+				return true;
+			}
+
+			function initBoard(board) {
+				const tag = document.createElement('table');
+
+				for (let i=0; i < board.length; i++) {
+					let row = tag.insertRow(i);
+					for(let j=0; j < board[i].length; j++) {
+						let cell = row.insertCell(j);
+						cell.style.backgroundColor = '#3498db';
+						cell.style.height = '25px';
+						cell.style.width = '25px';
+
+						if (board[i][j]) cell.innerHTML = '<img src=\'./queen.jpg\'>';
+						else cell.innerHTML = '';
+					};
+				};
+				document.getElementById('board').appendChild(tag);
+				solution += 1;
+			}
+
+			function backtrakSolve(board, col) {
+				if (col >= board.length) {
+					initBoard(board);
+					return;
+				}
+				else {
+					for (let row=0; row < board.length; row++) {
+						if (getDiagonal(board, row, col) && getColumns(board, col) && getRow(board, row)) {
+							board[row][col] = 1;
+							backtrakSolve(board, (col+1));
+							board[row][col] = 0;
+						}
+					}
+				}
+			}
+
+			function start() {
+				const input = document.getElementById('size');
+
+				size = parseInt(input.value, 10);
+				solution = 0;
+				if (size >= 4 && size <= 10) {
+					let board = Array(size).fill(0).map((el) => {
+						return Array(size).fill(0);
+					});
+
+					document.getElementById('board').innerHTML = '';
+					backtrakSolve(board, 0);
+
+					const display = document.getElementById('solution');
+					display.innerHTML = 'Solution found: ' + solution;
+				}
+			}
+		</script>
+
+		<style media="screen">
+			#size {
+				margin: auto;
+				display: block;
+			}
+			#solution {
+				display: table;
+				margin: auto;
+				margin-top: 50px;
+			}
+			#board {
+				display: table;
+				text-align: center;
+				margin: auto;
+				margin-top: 50px;
+			}
+			table {
+				margin-bottom: 50px;
+			}
+			button {
+				margin: auto;
+				display: block;
+			}
+			img {
+			    border-radius: 40px;
+			}
+		</style>
+	</body>
+</html>
